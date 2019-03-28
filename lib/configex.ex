@@ -1,18 +1,12 @@
 defmodule Configex do
   @moduledoc """
-  Documentation for Configex.
+  Configex helps you to deal with Elixir configuration.
   """
 
-  @doc """
-  Hello world.
-
-  ## Examples
-
-      iex> Configex.hello()
-      :world
-
-  """
-  def hello do
-    :world
+  def get_env(app, key, default \\ nil) do
+    case Application.get_env(app, key, default) do
+      {:system, varname} -> System.get_env(varname)
+      value -> value
+    end
   end
 end
