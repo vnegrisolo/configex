@@ -3,22 +3,31 @@ defmodule Configex do
   Configex helps you to deal with Elixir configuration.
   """
 
-  def get_env(app, key, default \\ {:no_default}) do
-    value = Application.get_env(app, key)
-    process_config(app, key, value, default)
+  def get_env!(app, key, default \\ {:no_default}) do
+    case get_env(app, key, default) do
+      {:ok, result} -> result
+      {:error, reason} -> raise(ArgumentError, reason)
+    end
   end
 
-  defp process_config(app, key, {:system, env, default}, _default),
-    do: process_config(app, key, {:system, env}, default)
+  def get_env(app, key, default \\ {:no_default}) do
+    case Application.get_env(app, key) do
+      {:system, env, default} -> get_system_env(env, default)
+      {:system, env} -> get_system_env(env, default)
+      nil -> get_application_env(app, key, default)
+      value -> {:ok, value}
+    end
+  end
 
-  defp process_config(_app, _key, {:system, env}, {:no_default}),
-    do: System.get_env(env) || raise(ArgumentError, "Missing ENV variable: '#{env}'")
+  defp get_system_env(env, default) do
+    case {System.get_env(env), default} do
+      {nil, {:no_default}} -> {:error, "Missing ENV variable: '#{env}'"}
+      {nil, default} -> {:ok, default}
+      {value, _default} -> {:ok, value}
+    end
+  end
 
-  defp process_config(_app, _key, {:system, env}, default), do: System.get_env(env) || default
-  defp process_config(app, key, nil, default), do: validate_config(app, key, default)
-  defp process_config(_app, _key, value, _default), do: value
-
-  defp validate_config(app, key, default) do
+  defp get_application_env(app, key, default) do
     found =
       app
       |> Application.get_all_env()
@@ -27,13 +36,13 @@ defmodule Configex do
 
     case {found, default} do
       {false, {:no_default}} ->
-        raise(ArgumentError, "Missing configuration for: 'config :#{app}, #{key}: <value>'")
+        {:error, "Missing configuration: 'config :#{app}, #{key}: <value>'"}
 
       {false, default} ->
-        default
+        {:ok, default}
 
       {true, _default} ->
-        nil
+        {:ok, Application.get_env(app, key)}
     end
   end
 end
