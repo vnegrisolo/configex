@@ -7,7 +7,11 @@ defmodule Configex.MixProject do
       version: "0.1.0",
       elixir: "~> 1.8",
       start_permanent: Mix.env() == :prod,
-      deps: deps()
+      deps: deps(),
+      docs: [main: "readme", extras: ~w(README.md)],
+      source_url: "https://github.com/vnegrisolo/configex",
+      package: package(),
+      name: "Configex",
     ]
   end
 
@@ -24,6 +28,19 @@ defmodule Configex.MixProject do
       {:credo, "~> 1.0", only: :test},
       {:dialyxir, "~> 0.5.1", only: :test},
       {:ex_doc, ">= 0.0.0", only: :dev}
+    ]
+  end
+
+  defp package() do
+    [
+      description: """
+      `Configex` helps you to deal with Elixir configuration.
+      """,
+      licenses: ~w(MIT),
+      maintainers: ["Vinicius Ferreira Negrisolo"],
+      links: %{
+        github: "https://github.com/vnegrisolo/configex"
+      }
     ]
   end
 end
