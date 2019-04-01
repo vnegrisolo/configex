@@ -5,13 +5,13 @@ defmodule Configex.MixProject do
     [
       app: :configex,
       version: "0.1.0",
-      elixir: "~> 1.8",
+      elixir: "~> 1.7",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       docs: [main: "readme", extras: ~w(README.md)],
       source_url: "https://github.com/vnegrisolo/configex",
       package: package(),
-      name: "Configex",
+      name: "Configex"
     ]
   end
 
