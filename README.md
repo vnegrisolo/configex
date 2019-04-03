@@ -72,7 +72,7 @@ There's much more use cases on the [hexdocs/configex documentation][hexdocs-conf
 
 ## Installation
 
-Check out `configex` dependency version on [hex.pm/configex][hex-pm-configex]. The package can be installed by adding `configex` to your list of dependencies in `mix.exs`:
+Check out `configex` version on [hex.pm/configex][hex-pm-configex]. The package can be installed by adding `configex` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
