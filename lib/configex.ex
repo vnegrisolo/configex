@@ -60,69 +60,48 @@ defmodule Configex do
 
   It can raise `Configex.ConfigError` if the application is miss configured.
 
+  ## Examples setup:
+
+  ```elixir
+  #{File.read!("test/support/my_app.ex")}
+  ```
+
   ## Examples
 
   **Successful** `get_config!/3` usage:
 
-      iex> System.put_env("MY_ENV", "some env value")
-      ...> System.put_env("MY_PORT", "9999")
-      ...>
-      ...> Application.put_env(:my_app, :hardcoded_nil, nil)
-      ...> Application.put_env(:my_app, :hardcoded_value, "some hardcoded value")
-      ...> Application.put_env(:my_app, :system_env, {:system, "MY_ENV"})
-      ...> Application.put_env(:my_app, :system_missing, {:system, "MISSING_ENV"})
-      ...> Application.put_env(:my_app, :system_default, {:system, "MISSING_ENV", "some system default"})
-      ...> Application.put_env(:my_app, :recursive_map, %{port: {:system, "MY_PORT"}})
-      ...> Application.put_env(:my_app, :recursive_list, port: {:system, "MY_PORT"})
-      ...>
-      iex> defmodule MyModule do
-      ...>   use Configex
-      ...>
-      ...>   @hardcoded_nil get_config!(:my_app, :hardcoded_nil)
-      ...>   @hardcoded_value get_config!(:my_app, :hardcoded_value)
-      ...>
-      ...>   def hardcoded_nil(), do: @hardcoded_nil
-      ...>   def hardcoded_value(), do: @hardcoded_value
-      ...>   def missing_conf_default(), do: get_config!(:my_app, :missing_conf, "some default value")
-      ...>
-      ...>   def system_env(), do: get_config!(:my_app, :system_env)
-      ...>   def system_missing_default(), do: get_config!(:my_app, :system_missing, "some default value")
-      ...>   def system_default(), do: get_config!(:my_app, :system_default)
-      ...>
-      ...>   def recursive_map(), do: get_config!(:my_app, :recursive_map)
-      ...>   def recursive_list(), do: get_config!(:my_app, :recursive_list)
-      ...> end
-      ...>
-      iex> MyModule.hardcoded_nil()
+      iex> MyApp.MyModule.hardcoded_nil()
       nil
-      ...>
-      iex> MyModule.hardcoded_value()
-      "some hardcoded value"
-      ...>
-      iex> MyModule.missing_conf_default()
-      "some default value"
-      ...>
-      iex> MyModule.system_env()
-      "some env value"
-      ...>
-      iex> MyModule.system_missing_default()
-      "some default value"
-      ...>
-      iex> MyModule.system_default()
-      "some system default"
-      ...>
-      iex> MyModule.recursive_map()
-      %{port: "9999"}
-      ...>
-      iex> MyModule.recursive_list()
-      [port: "9999"]
 
-  **Failed** to `get_config!/3`:
+      iex> MyApp.MyModule.hardcoded_value()
+      "some hardcoded value"
+
+      iex> MyApp.MyModule.missing_conf_default()
+      "some default value"
+
+      iex> MyApp.MyModule.missing_conf()
+      ** (Configex.ConfigError) Missing configuration: 'config :my_app, missing_conf: <value>'
+
+      iex> MyApp.MyModule.system_env()
+      "some env value"
+
+      iex> MyApp.MyModule.system_missing_default()
+      "some default value"
+
+      iex> MyApp.MyModule.system_default()
+      "some system default"
+
+      iex> MyApp.MyModule.system_missing()
+      ** (Configex.ConfigError) Missing ENV variable: 'MISSING_ENV'
+
+      iex> MyApp.MyModule.recursive_map()
+      %{port: "9999"}
+
+      iex> MyApp.MyModule.recursive_list()
+      [port: "9999"]
 
   When **ENV** is used on **compile time**:
 
-      iex> Application.put_env(:my_app, :system_env, {:system, "MY_ENV"})
-      ...>
       iex> defmodule MyModuleFailWhenEnvOnModuleAttr do
       ...>   use Configex
       ...>
@@ -131,30 +110,6 @@ defmodule Configex do
       ...>   def system_env(), do: @system_env
       ...> end
       ** (Configex.ConfigError) ENV must not be used on compilation time: 'MY_ENV'
-
-  When **missing config**:
-
-      iex> defmodule MyModuleFailWhenMissingConf do
-      ...>   use Configex
-      ...>
-      ...>   def missing_conf(), do: get_config!(:my_app, :missing_conf)
-      ...> end
-      ...>
-      ...> MyModuleFailWhenMissingConf.missing_conf()
-      ** (Configex.ConfigError) Missing configuration: 'config :my_app, missing_conf: <value>'
-
-  When **missing ENV var**:
-
-      iex> Application.put_env(:my_app, :system_missing, {:system, "MISSING_ENV"})
-      ...>
-      iex> defmodule MyModuleFailWhenMissingEnv do
-      ...>   use Configex
-      ...>
-      ...>   def system_missing(), do: get_config!(:my_app, :system_missing)
-      ...> end
-      ...>
-      ...> MyModuleFailWhenMissingEnv.system_missing()
-      ** (Configex.ConfigError) Missing ENV variable: 'MISSING_ENV'
   """
   defmacro get_config!(app, key, default) when is_atom(app) and is_atom(key) do
     quote bind_quoted: [app: app, key: key, default: default] do
