@@ -33,13 +33,15 @@ Now let's see how `Configex` can benefit us.
 
 1.  💥  It raises an error if a configuration is missing and if no `default` is provided.
 
-2.  ⚙️  You can configure ENV vars like `config :my_app, my_config: {:system, "MY_ENV"}`
+2.  💥  It raises an error if an ENV var is missing and if no `default` is provided.
 
-3.  ⚙️  You can configure ENV vars with a default value like `config :my_app, my_config: {:system, "MY_ENV", "<some default>"}`
+3.  💥  It raises an error if an ENV var is used **on compilation time**.
 
-4.  💥  It raises an error if an ENV var is missing and if no `default` is provided.
+4.  ⚙️  You can configure ENV vars like `config :my_app, my_config: {:system, "MY_ENV"}`
 
-5.  💥  It raises an error if an ENV var is used **on compilation time**.
+5.  ⚙️  You can configure ENV vars with a default value like `config :my_app, my_config: {:system, "MY_ENV", "<some default>"}`
+
+6.  ⚙️  You can configure ENV vars recursively like `config :my_app, my_config: [port: {:system, "MY_ENV"}]`
 
 ## Configuration Example:
 
@@ -57,10 +59,16 @@ config :my_app,
   defmodule MyApp.MyModule do
     use Configex
 
-    def hardcoded_conf(), do: get_config!(:my_app, :hardcoded, "some default")
-    def env_conf(), do: get_config!(:my_app, :env, "some default")
+    @hardcoded_conf get_config!(:my_app, :hardcoded)
+
+    def hardcoded_conf(), do: @hardcoded_conf
+    def env_conf(), do: get_config!(:my_app, :env)
   end
 ```
+
+## Documentation
+
+There's much more use cases on the [hexdocs/configex documentation][hexdocs-configex].
 
 ## Installation
 
@@ -73,10 +81,6 @@ def deps do
   ]
 end
 ```
-
-## Documentation
-
-The `Configex` documentation is hosted on [hexdocs/configex][hexdocs-configex].
 
 ## Development
 

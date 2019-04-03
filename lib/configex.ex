@@ -65,12 +65,15 @@ defmodule Configex do
   **Successful** `get_config!/3` usage:
 
       iex> System.put_env("MY_ENV", "some env value")
+      ...> System.put_env("MY_PORT", "9999")
       ...>
       ...> Application.put_env(:my_app, :hardcoded_nil, nil)
       ...> Application.put_env(:my_app, :hardcoded_value, "some hardcoded value")
       ...> Application.put_env(:my_app, :system_env, {:system, "MY_ENV"})
       ...> Application.put_env(:my_app, :system_missing, {:system, "MISSING_ENV"})
       ...> Application.put_env(:my_app, :system_default, {:system, "MISSING_ENV", "some system default"})
+      ...> Application.put_env(:my_app, :recursive_map, %{port: {:system, "MY_PORT"}})
+      ...> Application.put_env(:my_app, :recursive_list, port: {:system, "MY_PORT"})
       ...>
       iex> defmodule MyModule do
       ...>   use Configex
@@ -85,6 +88,9 @@ defmodule Configex do
       ...>   def system_env(), do: get_config!(:my_app, :system_env)
       ...>   def system_missing_default(), do: get_config!(:my_app, :system_missing, "some default value")
       ...>   def system_default(), do: get_config!(:my_app, :system_default)
+      ...>
+      ...>   def recursive_map(), do: get_config!(:my_app, :recursive_map)
+      ...>   def recursive_list(), do: get_config!(:my_app, :recursive_list)
       ...> end
       ...>
       iex> MyModule.hardcoded_nil()
@@ -104,6 +110,12 @@ defmodule Configex do
       ...>
       iex> MyModule.system_default()
       "some system default"
+      ...>
+      iex> MyModule.recursive_map()
+      %{port: "9999"}
+      ...>
+      iex> MyModule.recursive_list()
+      [port: "9999"]
 
   **Failed** to `get_config!/3`:
 
