@@ -15,7 +15,7 @@ just restart** the app, but you'll have to run CI again to **re-compile** and **
 
 ## How to use `Configex`
 
-The easiest way to use `Configex` is by calling `get_config!/2`:
+The easiest way to use `Configex` is by calling `get_config!/3`:
 
 ```elixir
 defmodule MyModule do
@@ -25,7 +25,7 @@ defmodule MyModule do
 end
 ```
 
-Cool, so far `Configex.get_config!/2` will do the same work as `Application.get_env/2`. The same for `Configex.get_config!/3` will do the same work as `Application.get_env/3`.
+Cool, so far `get_config!/3` will do the same work as `Application.get_env/3`.
 
 Now let's see how `Configex` can benefit us.
 
@@ -47,10 +47,8 @@ Now let's see how `Configex` can benefit us.
 use Mix.Config
 
 config :my_app,
-  harcoded_1: nil,
-  harcoded_2: "Some harcoded value",
-  env_1: {:system, "ENV_1"},
-  env_2: {:system, "ENV_2", "some system default"}
+  hardcoded: "Some hardcoded value",
+  env: {:system, "MY_ENV", "some system default"}
 ```
 
 ## Usage Example:
@@ -59,17 +57,8 @@ config :my_app,
   defmodule MyApp.MyModule do
     use Configex
 
-    # ✅  this is a valid assignment as this is a hardcoded configuration
-    @harcoded_1 get_config!(:my_app, :harcoded_1)
-
-    # 💥  this raises an error as this config is an ENV var and
-    # ENV vars are not suppose to be used on compilation time
-    @env_1 get_config!(:my_app, :env_1)
-
-    def harcoded_1(), do: @harcoded_1
-    def harcoded_2(), do: get_config!(:my_app, :harcoded_2)
-    def env_1(), do: @env_1
-    def env_2(), do: get_config!(:my_app, :env_2)
+    def hardcoded_conf(), do: get_config!(:my_app, :hardcoded, "some default")
+    def env_conf(), do: get_config!(:my_app, :env, "some default")
   end
 ```
 
