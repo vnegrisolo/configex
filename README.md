@@ -77,7 +77,7 @@ Check out `configex` dependency version on [hex.pm/configex][hex-pm-configex]. T
 ```elixir
 def deps do
   [
-    {:configex, "~> 0.1.0"}
+    {:configex, "~> 0.1.1"}
   ]
 end
 ```
