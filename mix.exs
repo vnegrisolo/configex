@@ -18,7 +18,7 @@ defmodule Configex.MixProject do
       package: package(),
       source_url: "https://github.com/vnegrisolo/#{@app}",
       start_permanent: Mix.env() == :prod,
-      version: "0.1.2"
+      version: "0.1.3"
     ]
   end
 
