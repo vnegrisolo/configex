@@ -27,7 +27,7 @@ defmodule Configex.MixProject do
 
   defp deps do
     [
-      {:credo, "~> 1.0.4", only: :test},
+      {:credo, "~> 1.1.0", only: :test},
       {:dialyxir, "~> 0.5.1", only: :test},
       {:ex_doc, ">= 0.0.0", only: :dev}
     ]
